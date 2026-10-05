@@ -4,37 +4,71 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-int main(int argc, char *argv[])
-{
-    if (argc < 2)
-    {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
         fprintf(stderr, "Usage: %s <command> [args...]\n", argv[0]);
         return 1;
     }
 
-
-    // Todo: set up IPC here (pipe or shared mem), Before fork
+    int fd[2];
+    if (pipe(fd) < 0) {
+        perror("pipe");
+        return 1;
+    }
 
     pid_t pid = fork();
-    if (pid < 0) {perror("fork"); return 1;}
+    if (pid < 0) {
+        perror("fork");
+        close(fd[0]);
+        close(fd[1]);
+        return 1;
+    }
 
-    // child
+    if (pid == 0) {
+        close(fd[0]);
 
-    if (pid == 0) 
-    {
         struct timeval start;
-        if (gettimeofday(&start, NULL) < 0) { perror("gettimeofday"); exit(1);}
-        // Todo: send start to the parent
+        if (gettimeofday(&start, NULL) < 0) {
+            perror("gettimeofday");
+            close(fd[1]);
+            exit(1);
+        }
+
+        if (write(fd[1], &start, sizeof(start)) != sizeof(start)) {
+            perror("wrtite");
+            close(fd[1]);
+            exit(1);
+        }
+
+        close(fd[1]);
+
         execvp(argv[1], &argv[1]);
-        perror("execvp");              // only runs if exec failed
+        perror("execvp");
         exit(1);
     }
 
-    // parent
+    close(fd[1]);
+
     wait(NULL);
+
     struct timeval end;
-    if (gettimeofday(&end, NULL) < 0) {perror("gettimeofday"); return 1;}
-    // todo: get start from child, compute elapsed, print with %.6f
-    
+    if (gettimeofday(&end, NULL) <0) {
+        perror("gettimeofday");
+        close(fd[0]);
+        return 1;
+    }
+
+    struct timeval start;
+    if (read(fd[0], &start, sizeof(start)) != sizeof(start)) {
+        perror("read");
+        close(fd[0]);
+        return 1;
+    }
+
+    close(fd[0]);
+
+    double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
+    print("Elapsed time: %.6f seconds\n", elapsed);
+
     return 0;
 }
