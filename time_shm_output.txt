@@ -1,0 +1,10 @@
+total 32
+-rw-r--r-- 1 chris chris   925 Oct  5 18:45 main.c
+-rwxr-xr-x 1 chris chris 16424 Oct  5 18:45 time
+-rw-r--r-- 1 chris chris  1688 Oct  5 18:45 time_pipe.c
+-rw-r--r-- 1 chris chris  1556 Oct  5 18:45 time_shm.c
+-rw-r--r-- 1 chris chris     0 Oct  5 18:45 time_shm_output.txt
+Elapsed time: 0.008345 seconds
+/home/chris/PA_2
+Elapsed time: 0.004326 seconds
+Elapsed time: 1.003995 seconds
