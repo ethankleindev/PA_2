@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
         }
 
         if (write(fd[1], &start, sizeof(start)) != sizeof(start)) {
-            perror("wrtite");
+            perror("write"); // small error again. was wrtite now write.
             close(fd[1]);
             exit(1);
         }
@@ -49,14 +49,7 @@ int main(int argc, char *argv[]) {
 
     close(fd[1]);
 
-    wait(NULL);
-
-    struct timeval end;
-    if (gettimeofday(&end, NULL) <0) {
-        perror("gettimeofday");
-        close(fd[0]);
-        return 1;
-    }
+    //Fixed logic to make the time value start first then it ends. It was reversed
 
     struct timeval start;
     if (read(fd[0], &start, sizeof(start)) != sizeof(start)) {
@@ -64,11 +57,18 @@ int main(int argc, char *argv[]) {
         close(fd[0]);
         return 1;
     }
+    close(fd[0]); // finished reading from pipe
 
-    close(fd[0]);
+    wait(NULL); //wait for child to finish execution
+
+    struct timeval end;
+    if (gettimeofday(&end, NULL) <0) {
+        perror("gettimeofday");
+        return 1;
+    }
 
     double elapsed = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1000000.0;
-    print("Elapsed time: %.6f seconds\n", elapsed);
+    printf("Elapsed time: %.6f seconds\n", elapsed); //uses printf not print, just a basic error
 
     return 0;
 }
