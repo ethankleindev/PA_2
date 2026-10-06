@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     close(fd[1]);
 
-    //Fixed logic to make the time value start first then it ends. It was reversed
+    //Fixed logic to check the timeval start first then it ends. It was reversed
 
     struct timeval start;
     if (read(fd[0], &start, sizeof(start)) != sizeof(start)) {
