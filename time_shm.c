@@ -20,7 +20,12 @@ int main(int argc, char *argv[])
     if (shared_start == MAP_FAILED) {perror("mmap"); return 1;}
 
     pid_t pid = fork();
-    if (pid < 0) {perror("fork"); return 1;}
+    if (pid < 0) 
+    {
+        perror("fork"); 
+        munmap(shared_start, sizeof(struct timeval)); //small fix just clears possible memory leaks
+        return 1;
+    }
 
     // child
 
