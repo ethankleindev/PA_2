@@ -1,7 +1,7 @@
 ========================================================================
 Project Name: Interprocess Communication (IPC) Process Timing
 Course: Computer Science - Systems Programming
-Members: Ethan Klein, Gerson Mancia, Xammy Yang, Brain Nguyen, Chris Jose
+Members: Ethan Klein, Gerson Mancia, Xammy Yang, Brian Nguyen, Chris Jose
 ========================================================================
 
 1. OVERVIEW
@@ -22,6 +22,43 @@ close itself. While this is happening the parent receives the data and stores
 it as the start time. Then the parent waits until the child is done executing 
 and then it finds out the end time. It then subtracts them together and gets
 the total time. It prints them out at the end.
+
+2. EVIDENCE
+------------------------------------------------------------------------
+Shared memory version (time_shm.c):
+
+  $ ./time_shm ls -l | tee time_shm_output.txt
+  total 32
+  -rw-r--r-- 1 chris chris   925 Oct  5 18:45 main.c
+  -rwxr-xr-x 1 chris chris 16424 Oct  5 18:45 time
+  -rw-r--r-- 1 chris chris  1688 Oct  5 18:45 time_pipe.c
+  -rw-r--r-- 1 chris chris  1556 Oct  5 18:45 time_shm.c
+  -rw-r--r-- 1 chris chris     0 Oct  5 18:45 time_shm_output.txt
+  Elapsed time: 0.008345 seconds
+  $ ./time_shm pwd | tee -a time_shm_output.txt
+  /home/chris/PA_2
+  Elapsed time: 0.004326 seconds
+  $ ./time_shm sleep 1 | tee -a time_shm_output.txt
+  Elapsed time: 1.003995 seconds
+
+Pipe version (time_pipe.c):
+
+  $ ./time_pipe ls -l | tee time_pipe_output.txt
+  total 36
+  -rw-r--r-- 1 chris chris   925 Oct  5 18:45 main.c
+  -rwxr-xr-x 1 chris chris 16512 Oct  5 18:46 time
+  -rw-r--r-- 1 chris chris  1688 Oct  5 18:45 time_pipe.c
+  -rw-r--r-- 1 chris chris     0 Oct  5 18:46 time_pipe_output.txt
+  -rw-r--r-- 1 chris chris  1556 Oct  5 18:45 time_shm.c
+  -rw-r--r-- 1 chris chris   394 Oct  5 18:46 time_shm_output.txt
+  Elapsed time: 0.003273 seconds
+  $ ./time_pipe pwd | tee -a time_pipe_output.txt
+  /home/chris/PA_2
+  Elapsed time: 0.002175 seconds
+  $ ./time_pipe sleep 1 | tee -a time_pipe_output.txt
+  Elapsed time: 1.001940 seconds
+
+Both sleep 1 runs measure about 1.00 seconds, confirming the timing works.
 
 3. COMPILATION
 ------------------------------------------------------------------------
